@@ -22,7 +22,13 @@ class NoteRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('編號')->sortable(),
-                Tables\Columns\TextColumn::make('folder.name')->label('資料夾')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('folder.name')
+                    ->label('資料夾')
+                    ->sortable()
+                    ->searchable()
+                    ->formatStateUsing(fn ($record) => $record->folder?->full_name ?? '-')
+                    ->html()
+                    ->fontFamily('monospace'),
                 Tables\Columns\TextColumn::make('title')->label('標題')->sortable()->searchable(),
                 Tables\Columns\BooleanColumn::make('is_active')->label('啟用'),
                 Tables\Columns\TextColumn::make('created_at')->label('建立時間')->dateTime(),
@@ -53,7 +59,10 @@ class NoteRelationManager extends RelationManager
                     ->relationship('folder', 'name')
                     ->label('資料夾')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
+                    ->allowHtml()
+                    ->selectablePlaceholder(false),
                 Forms\Components\TextInput::make('title')
                     ->label('標題')
                     ->required()

@@ -31,6 +31,14 @@ class NoteResource extends Resource
                     ->relationship('member', 'name')
                     ->label('會員')
                     ->required(),
+                Forms\Components\Select::make('folder_id')
+                    ->relationship('folder', 'name')
+                    ->label('資料夾')
+                    ->searchable()
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
+                    ->allowHtml()
+                    ->selectablePlaceholder(false),
                 Forms\Components\TextInput::make('title')
                     ->label('標題')
                     ->required()

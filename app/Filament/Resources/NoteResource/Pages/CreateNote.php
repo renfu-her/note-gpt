@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateNote extends CreateRecord
 {
     protected static string $resource = NoteResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

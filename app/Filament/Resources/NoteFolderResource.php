@@ -30,12 +30,21 @@ class NoteFolderResource extends Resource
                 Forms\Components\Select::make('member_id')
                     ->relationship('member', 'name')
                     ->label('會員')
-                    ->required(),
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(fn ($state, Forms\Set $set) => $set('parent_id', null)),
                 Forms\Components\Select::make('parent_id')
-                    ->relationship('parent', 'name', fn ($query) => $query->whereNull('parent_id'))
+                    ->relationship(
+                        'parent',
+                        'name',
+                        fn (Builder $query, Forms\Get $get) => $query->where('member_id', $get('member_id'))
+                    )
                     ->label('父層資料夾')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
+                    ->allowHtml()
+                    ->selectablePlaceholder(false),
                 Forms\Components\TextInput::make('name')
                     ->label('名稱')
                     ->required()
@@ -64,14 +73,12 @@ class NoteFolderResource extends Resource
                     ->label('會員')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('parent.name')
-                    ->label('父層資料夾')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('full_name')
                     ->label('名稱')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->html()
+                    ->fontFamily('monospace'),
                 Tables\Columns\TextColumn::make('sort_order')
                     ->label('排序')
                     ->sortable(),

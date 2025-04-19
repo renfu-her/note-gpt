@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class NoteFolderRelationManager extends RelationManager
 {
@@ -18,8 +19,12 @@ class NoteFolderRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('編號')->sortable(),
-                Tables\Columns\TextColumn::make('parent.name')->label('父層資料夾')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('name')->label('名稱')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('full_name')
+                    ->label('名稱')
+                    ->sortable()
+                    ->searchable()
+                    ->html()
+                    ->fontFamily('monospace'),
                 Tables\Columns\TextColumn::make('sort_order')->label('排序')->sortable(),
                 Tables\Columns\BooleanColumn::make('is_active')->label('啟用'),
                 Tables\Columns\TextColumn::make('created_at')->label('建立時間')->dateTime(),
@@ -46,10 +51,17 @@ class NoteFolderRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('parent_id')
-                    ->relationship('parent', 'name', fn ($query) => $query->whereNull('parent_id'))
+                    ->relationship(
+                        'parent',
+                        'name',
+                        fn (Builder $query) => $query->where('member_id', $this->ownerRecord->id)
+                    )
                     ->label('父層資料夾')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
+                    ->allowHtml()
+                    ->selectablePlaceholder(false),
                 Forms\Components\TextInput::make('name')
                     ->label('名稱')
                     ->required()

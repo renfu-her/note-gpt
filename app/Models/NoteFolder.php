@@ -17,6 +17,34 @@ class NoteFolder extends Model
         'is_active',
     ];
 
+    protected $appends = ['full_name'];
+
+    public function getFullNameAttribute(): string
+    {
+        $level = 0;
+        $current = $this;
+        while ($current->parent) {
+            $level++;
+            $current = $current->parent;
+        }
+        $padding = $level * 20; // 20px per level
+        return "<span style='padding-left: {$padding}px'>{$this->name}</span>";
+    }
+
+    public function getIndentedNameAttribute(): string
+    {
+        $ancestors = collect();
+        $current = $this;
+        
+        while ($current->parent) {
+            $ancestors->push($current->parent);
+            $current = $current->parent;
+        }
+        
+        $path = $ancestors->reverse()->map(fn ($folder) => $folder->name)->push($this->name);
+        return $path->join(' / ');
+    }
+
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
