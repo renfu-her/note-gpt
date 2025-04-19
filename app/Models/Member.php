@@ -14,4 +14,9 @@ class Member extends Model
     {
         return $this->hasMany(Note::class);
     }
+
+    public function noteFolders(): HasMany
+    {
+        return $this->hasMany(NoteFolder::class);
+    }
 }

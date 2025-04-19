@@ -8,10 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Note extends Model
 {
-    protected $fillable = ['member_id', 'title', 'content', 'is_active'];
+    protected $fillable = ['member_id', 'folder_id', 'title', 'content', 'is_active'];
 
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
+    }
+
+    public function folder(): BelongsTo
+    {
+        return $this->belongsTo(NoteFolder::class);
     }
 }

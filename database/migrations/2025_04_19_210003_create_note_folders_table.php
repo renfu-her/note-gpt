@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notes', function (Blueprint $table) {
+        Schema::create('note_folders', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->foreignId('member_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('folder_id')->nullable()->constrained('note_folders')->nullOnDelete();
-            $table->string('title');
-            $table->text('content');
+            $table->foreignId('parent_id')->nullable()->constrained('note_folders')->nullOnDelete();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->integer('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
+            $table->timestamps();
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notes');
+        Schema::dropIfExists('note_folders');
     }
 };
