@@ -73,12 +73,10 @@ class NoteFolderResource extends Resource
                     ->label('會員')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('full_name')
+                Tables\Columns\TextColumn::make('arrow_path')
                     ->label('名稱')
                     ->sortable()
-                    ->searchable()
-                    ->html()
-                    ->fontFamily('monospace'),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('sort_order')
                     ->label('排序')
                     ->sortable(),

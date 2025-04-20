@@ -17,7 +17,20 @@ class NoteFolder extends Model
         'is_active',
     ];
 
-    protected $appends = ['full_name'];
+    protected $appends = ['full_name', 'arrow_path'];
+
+    public function getArrowPathAttribute(): string
+    {
+        $ancestors = collect();
+        $current = $this;
+        
+        while ($current) {
+            $ancestors->push($current->name);
+            $current = $current->parent;
+        }
+        
+        return $ancestors->reverse()->join(' -> ');
+    }
 
     public function getFullNameAttribute(): string
     {
