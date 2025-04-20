@@ -241,6 +241,85 @@ Authorization: Bearer your-api-token
 ]
 ```
 
+#### 創建資料夾
+```http
+POST /api/folders
+Content-Type: application/json
+Authorization: Bearer your-api-token
+
+{
+    "name": "新資料夾",
+    "parent_id": 0    // 如果是最上層資料夾，可以傳 0 或不傳
+}
+```
+
+回應：
+```json
+{
+    "message": "資料夾建立成功",
+    "data": {
+        "id": 4,
+        "name": "新資料夾",
+        "arrow_path": "新資料夾",
+        "sort_order": 1
+    }
+}
+```
+
+#### 更新資料夾
+```http
+PUT /api/folders/{id}
+Content-Type: application/json
+Authorization: Bearer your-api-token
+
+{
+    "name": "更新的資料夾名稱"
+}
+```
+
+回應：
+```json
+{
+    "message": "資料夾更新成功",
+    "data": {
+        "id": 4,
+        "name": "更新的資料夾名稱",
+        "arrow_path": "更新的資料夾名稱",
+        "sort_order": 1
+    }
+}
+```
+
+#### 刪除資料夾
+```http
+DELETE /api/folders/{id}
+Authorization: Bearer your-api-token
+```
+
+回應：
+```json
+{
+    "message": "資料夾刪除成功"
+}
+```
+
+注意：
+- 刪除資料夾時，如果資料夾內有子資料夾或筆記，將無法刪除
+- 刪除失敗時會返回具體的錯誤訊息：
+```json
+{
+    "message": "資料夾內還有子資料夾，無法刪除",
+    "error": "has_children"
+}
+```
+或
+```json
+{
+    "message": "資料夾內還有筆記，無法刪除",
+    "error": "has_notes"
+}
+```
+
 ### 筆記 API
 
 #### 獲取筆記列表
@@ -263,8 +342,8 @@ Authorization: Bearer your-api-token
                 "title": "測試筆記",
                 "content": "筆記內容",
                 "is_active": 1,
-                "created_at": "2024-03-20T10:00:00.000000Z",
-                "updated_at": "2024-03-20T10:00:00.000000Z"
+                "created_at": "2024-03-20 10:00:00",
+                "updated_at": "2024-03-20 10:00:00"
             }
         ]
     },
@@ -279,8 +358,8 @@ Authorization: Bearer your-api-token
                 "title": "未分類筆記",
                 "content": "筆記內容",
                 "is_active": 1,
-                "created_at": "2024-03-20T10:00:00.000000Z",
-                "updated_at": "2024-03-20T10:00:00.000000Z"
+                "created_at": "2024-03-20 10:00:00",
+                "updated_at": "2024-03-20 10:00:00"
             }
         ]
     }
@@ -306,8 +385,8 @@ Authorization: Bearer your-api-token
             "title": "測試筆記",
             "content": "筆記內容",
             "is_active": 1,
-            "created_at": "2024-03-20T10:00:00.000000Z",
-            "updated_at": "2024-03-20T10:00:00.000000Z"
+            "created_at": "2024-03-20 10:00:00",
+            "updated_at": "2024-03-20 10:00:00"
         }
     ]
 }
@@ -336,8 +415,8 @@ Authorization: Bearer your-api-token
         "title": "新筆記標題",
         "content": "筆記內容",
         "is_active": 1,
-        "created_at": "2024-03-20T10:00:00.000000Z",
-        "updated_at": "2024-03-20T10:00:00.000000Z"
+        "created_at": "2024-03-20 10:00:00",
+        "updated_at": "2024-03-20 10:00:00"
     }
 }
 ```
@@ -349,7 +428,6 @@ Content-Type: application/json
 Authorization: Bearer your-api-token
 
 {
-    "folder_id": 1,
     "title": "更新的筆記標題",
     "content": "更新的筆記內容"
 }
@@ -365,8 +443,8 @@ Authorization: Bearer your-api-token
         "title": "更新的筆記標題",
         "content": "更新的筆記內容",
         "is_active": 1,
-        "created_at": "2024-03-20T10:00:00.000000Z",
-        "updated_at": "2024-03-20T10:00:00.000000Z"
+        "created_at": "2024-03-20 10:00:00",
+        "updated_at": "2024-03-20 10:00:00"
     }
 }
 ```

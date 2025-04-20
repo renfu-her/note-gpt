@@ -19,6 +19,11 @@ class NoteFolder extends Model
 
     protected $appends = ['full_name', 'arrow_path'];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     public function getArrowPathAttribute(): string
     {
         $ancestors = collect();

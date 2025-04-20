@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FolderController;
 use App\Http\Controllers\Api\NoteController;
+use App\Http\Controllers\Api\NoteFolderController;
 use Illuminate\Support\Facades\Route;
 
 // 公開路由
@@ -15,7 +16,10 @@ Route::middleware(['ensure.token'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     
     // 資料夾相關
-    Route::get('/folders', [FolderController::class, 'index']);
+    Route::get('/folders', [NoteFolderController::class, 'index']);
+    Route::post('/folders', [NoteFolderController::class, 'store']);
+    Route::put('/folders/{id}', [NoteFolderController::class, 'update']);
+    Route::delete('/folders/{id}', [NoteFolderController::class, 'destroy']);
     
     // 筆記相關
     Route::get('/notes/folders/{folder}', [NoteController::class, 'index']); // 特定資料夾的筆記

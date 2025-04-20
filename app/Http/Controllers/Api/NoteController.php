@@ -41,8 +41,8 @@ class NoteController extends Controller
                         'title' => $note->title,
                         'content' => $note->content,
                         'is_active' => $note->is_active,
-                        'created_at' => $note->created_at,
-                        'updated_at' => $note->updated_at,
+                        'created_at' => $note->created_at->format('Y-m-d H:i:s'),
+                        'updated_at' => $note->updated_at->format('Y-m-d H:i:s'),
                     ];
                 });
 
@@ -75,8 +75,8 @@ class NoteController extends Controller
                         'title' => $note->title,
                         'content' => $note->content,
                         'is_active' => $note->is_active,
-                        'created_at' => $note->created_at,
-                        'updated_at' => $note->updated_at,
+                        'created_at' => $note->created_at->format('Y-m-d H:i:s'),
+                        'updated_at' => $note->updated_at->format('Y-m-d H:i:s'),
                     ];
                 });
 
@@ -103,8 +103,8 @@ class NoteController extends Controller
                     'title' => $note->title,
                     'content' => $note->content,
                     'is_active' => $note->is_active,
-                    'created_at' => $note->created_at,
-                    'updated_at' => $note->updated_at,
+                    'created_at' => $note->created_at->format('Y-m-d H:i:s'),
+                    'updated_at' => $note->updated_at->format('Y-m-d H:i:s'),
                 ];
             });
 

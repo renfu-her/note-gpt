@@ -10,6 +10,11 @@ class Note extends Model
 {
     protected $fillable = ['member_id', 'folder_id', 'title', 'content', 'is_active'];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
