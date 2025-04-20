@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 class MemberResource extends Resource
 {
@@ -38,14 +39,15 @@ class MemberResource extends Resource
                 Forms\Components\TextInput::make('email')
                     ->label('電子郵件')
                     ->email()
-                    ->required(),
+                    ->required()
+                    ->disabled(fn ($context) => $context === 'edit')
+                    ->dehydrated(fn ($context) => $context !== 'edit'),
                 Forms\Components\TextInput::make('password')
                     ->label('密碼')
                     ->password()
-                    ->dehydrateStateUsing(fn (string $state): string => bcrypt($state))
-                    ->dehydrated(fn (?string $state): bool => filled($state))
-                    ->required(fn (string $operation): bool => $operation === 'create')
-                    ->maxLength(255),
+                    ->required(fn ($context) => $context === 'create')
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->dehydrateStateUsing(fn ($state) => Hash::make($state)),
                 Forms\Components\DatePicker::make('birthday')
                     ->label('生日')
                     ->required(),
@@ -67,13 +69,15 @@ class MemberResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label('姓名')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('phone')->label('電話')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('email')->label('電子郵件')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('birthday')->label('生日')->date(),
-                Tables\Columns\TextColumn::make('note')->label('備註')->limit(50),
-                Tables\Columns\BooleanColumn::make('is_active')->label('啟用'),
-                Tables\Columns\TextColumn::make('created_at')->label('建立時間')->dateTime(),
-                Tables\Columns\BadgeColumn::make('notes_count')
+                Tables\Columns\TextColumn::make('birthday')->label('生日')->date('Y-m-d'),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->label('啟用'),
+                Tables\Columns\TextColumn::make('created_at')->label('建立時間')->dateTime('Y-m-d H:i:s'),
+                Tables\Columns\TextColumn::make('notes_count')
                     ->counts('notes')
-                    ->label('筆記數'),
+                    ->label('筆記數')
+                    ->badge()
+                    ->color('success'),
             ])
             ->filters([
                 // 依需求新增過濾器
