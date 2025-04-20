@@ -42,10 +42,12 @@ class NoteResource extends Resource
                 Forms\Components\TextInput::make('title')
                     ->label('標題')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpanFull(),
                 Forms\Components\MarkdownEditor::make('content')
                     ->label('內容')
-                    ->required(),
+                    ->required()
+                    ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_active')
                     ->label('啟用')
                     ->inline(false)
