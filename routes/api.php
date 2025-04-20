@@ -18,10 +18,10 @@ Route::middleware(['ensure.token'])->group(function () {
     Route::get('/folders', [FolderController::class, 'index']);
     
     // 筆記相關
-    Route::get('/notes', [NoteController::class, 'index']); // 所有筆記
     Route::get('/notes/folders/{folder}', [NoteController::class, 'index']); // 特定資料夾的筆記
 
     // 筆記相關路由
+    Route::get('/notes', [NoteController::class, 'index']); // 所有筆記
     Route::post('/notes', [NoteController::class, 'store']);
     Route::put('/notes/{id}', [NoteController::class, 'update']);
     Route::delete('/notes/{id}', [NoteController::class, 'destroy']);

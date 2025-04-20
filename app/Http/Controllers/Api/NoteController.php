@@ -130,39 +130,95 @@ class NoteController extends Controller
         return response()->json($result, 200);
     }
 
-    public function store(NoteRequest $request): JsonResponse
+    public function store(Request $request) 
     {
-        $member = Auth::guard('member')->user();
-        
-        $data = $request->validated();
-        if (isset($data['folder_id']) && $data['folder_id'] === 0) {
-            $data['folder_id'] = null;
-        }
-        
-        $note = $member->notes()->create($data);
+        try {
+            $validator = validator($request->all(), [
+                'folder_id' => 'required|exists:note_folders,id',
+                'title' => 'required|string|max:255',
+                'content' => 'required|string'
+            ], [
+                'folder_id.required' => '請選擇資料夾',
+                'folder_id.exists' => '所選資料夾不存在',
+                'title.required' => '請輸入標題',
+                'title.string' => '標題必須為文字',
+                'title.max' => '標題不能超過255個字元',
+                'content.required' => '請輸入內容',
+                'content.string' => '內容必須為文字'
+            ]);
 
-        return response()->json([
-            'message' => '筆記建立成功',
-            'data' => $note
-        ], Response::HTTP_CREATED);
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => '參數錯誤',
+                    'errors' => $validator->errors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $data = $request->all();
+            
+            $member = Auth::guard('member')->user();
+            
+            if ($data['folder_id'] === '0' || $data['folder_id'] === 0) {
+                $data['folder_id'] = null;
+            }
+            
+            $note = $member->notes()->create($data);
+
+            return response()->json([
+                'message' => '筆記建立成功',
+                'data' => $note
+            ], Response::HTTP_CREATED);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => '筆記建立失敗',
+                'error' => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
+        }
     }
 
-    public function update(NoteRequest $request, int $id): JsonResponse
+    public function update(Request $request, int $id)
     {
-        $member = Auth::guard('member')->user();
-        
-        $data = $request->validated();
-        if (isset($data['folder_id']) && $data['folder_id'] === 0) {
-            $data['folder_id'] = null;
-        }
-        
-        $note = $member->notes()->findOrFail($id);
-        $note->update($data);
+        try {
+            $validator = validator($request->all(), [
+                'title' => 'required|string|max:255',
+                'content' => 'required|string'
+            ], [
+                'title.required' => '請輸入標題',
+                'title.string' => '標題必須為文字',
+                'title.max' => '標題不能超過255個字元',
+                'content.required' => '請輸入內容',
+                'content.string' => '內容必須為文字'
+            ]);
 
-        return response()->json([
-            'message' => '筆記更新成功',
-            'data' => $note
-        ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => '參數錯誤',
+                    'errors' => $validator->errors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $member = Auth::guard('member')->user();
+            
+            $note = $member->notes()->findOrFail($id);
+            
+            // 只更新允許的欄位
+            $note->update([
+                'title' => $request->title,
+                'content' => $request->content
+            ]);
+
+            return response()->json([
+                'message' => '筆記更新成功',
+                'data' => $note
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => '筆記更新失敗',
+                'error' => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
+        }
     }
 
     public function destroy(int $id): JsonResponse
