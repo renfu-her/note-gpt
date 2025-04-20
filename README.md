@@ -249,25 +249,139 @@ GET /api/notes
 Authorization: Bearer your-api-token
 ```
 
-可選參數：
-- `folder_id`: 資料夾 ID，用於過濾特定資料夾的筆記
-
 回應：
 ```json
 [
     {
         "id": 1,
-        "title": "筆記標題",
-        "content": "筆記內容",
-        "folder": {
-            "id": 1,
-            "name": "測試",
-            "arrow_path": "測試 -> 測試01"
-        },
-        "created_at": "2024-01-01 00:00:00",
-        "updated_at": "2024-01-01 00:00:00"
+        "name": "測試資料夾",
+        "parent_id": null,
+        "is_active": 1,
+        "notes": [
+            {
+                "id": 1,
+                "title": "測試筆記",
+                "content": "筆記內容",
+                "is_active": 1,
+                "created_at": "2024-03-20T10:00:00.000000Z",
+                "updated_at": "2024-03-20T10:00:00.000000Z"
+            }
+        ]
+    },
+    {
+        "id": null,
+        "name": "未分類",
+        "parent_id": null,
+        "is_active": 1,
+        "notes": [
+            {
+                "id": 2,
+                "title": "未分類筆記",
+                "content": "筆記內容",
+                "is_active": 1,
+                "created_at": "2024-03-20T10:00:00.000000Z",
+                "updated_at": "2024-03-20T10:00:00.000000Z"
+            }
+        ]
     }
 ]
+```
+
+#### 獲取特定資料夾的筆記
+```http
+GET /api/notes/folders/{folder_id}
+Authorization: Bearer your-api-token
+```
+
+回應：
+```json
+{
+    "id": 1,
+    "name": "測試資料夾",
+    "parent_id": null,
+    "is_active": 1,
+    "notes": [
+        {
+            "id": 1,
+            "title": "測試筆記",
+            "content": "筆記內容",
+            "is_active": 1,
+            "created_at": "2024-03-20T10:00:00.000000Z",
+            "updated_at": "2024-03-20T10:00:00.000000Z"
+        }
+    ]
+}
+```
+
+#### 創建筆記
+```http
+POST /api/notes
+Content-Type: application/json
+Authorization: Bearer your-api-token
+
+{
+    "folder_id": 1,    // 如果 folder_id = 0，則會被視為 null（未分類筆記）
+    "title": "新筆記標題",
+    "content": "筆記內容"
+}
+```
+
+回應：
+```json
+{
+    "message": "筆記建立成功",
+    "data": {
+        "id": 1,
+        "folder_id": 1,    // 如果是未分類筆記，此值為 null
+        "title": "新筆記標題",
+        "content": "筆記內容",
+        "is_active": 1,
+        "created_at": "2024-03-20T10:00:00.000000Z",
+        "updated_at": "2024-03-20T10:00:00.000000Z"
+    }
+}
+```
+
+#### 更新筆記
+```http
+PUT /api/notes/{id}
+Content-Type: application/json
+Authorization: Bearer your-api-token
+
+{
+    "folder_id": 1,
+    "title": "更新的筆記標題",
+    "content": "更新的筆記內容"
+}
+```
+
+回應：
+```json
+{
+    "message": "筆記更新成功",
+    "data": {
+        "id": 1,
+        "folder_id": 1,
+        "title": "更新的筆記標題",
+        "content": "更新的筆記內容",
+        "is_active": 1,
+        "created_at": "2024-03-20T10:00:00.000000Z",
+        "updated_at": "2024-03-20T10:00:00.000000Z"
+    }
+}
+```
+
+#### 刪除筆記
+```http
+DELETE /api/notes/{id}
+Authorization: Bearer your-api-token
+```
+
+回應：
+```json
+{
+    "message": "筆記刪除成功"
+}
 ```
 
 ### 認證說明
