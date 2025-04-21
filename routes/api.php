@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\NoteFolderController;
 use Illuminate\Support\Facades\Route;
 
 // 公開路由
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh', [AuthController::class, 'refresh']);
 

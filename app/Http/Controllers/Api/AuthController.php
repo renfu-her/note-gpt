@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
@@ -99,5 +100,59 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => '已成功登出']);
+    }
+
+    public function register(Request $request)
+    {
+        try {
+            $validator = validator($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:members,email',
+                'password' => 'required|string|min:6'
+            ], [
+                'name.required' => '請輸入名稱',
+                'name.string' => '名稱必須為文字',
+                'name.max' => '名稱不能超過255個字元',
+                'email.required' => '請輸入電子郵件',
+                'email.email' => '請輸入有效的電子郵件',
+                'email.unique' => '此電子郵件已被註冊',
+                'password.required' => '請輸入密碼',
+                'password.string' => '密碼必須為文字',
+                'password.min' => '密碼至少需要6個字元'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => '參數錯誤',
+                    'errors' => $validator->errors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $member = Member::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'is_active' => true
+            ]);
+
+            $token = $member->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => '註冊成功',
+                'token' => $token,
+                'member' => [
+                    'id' => $member->id,
+                    'name' => $member->name,
+                    'email' => $member->email
+                ],
+                'expires_in' => 3600
+            ], Response::HTTP_CREATED);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => '註冊失敗',
+                'error' => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
+        }
     }
 }
