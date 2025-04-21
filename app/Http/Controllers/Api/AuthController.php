@@ -105,9 +105,18 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
+            // 先檢查 email 是否已存在
+            $existingMember = Member::where('email', $request->email)->first();
+            if ($existingMember) {
+                return response()->json([
+                    'message' => '此電子郵件已被註冊',
+                    'error' => 'email_exists'
+                ], Response::HTTP_CONFLICT);
+            }
+
             $validator = validator($request->all(), [
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:members,email',
+                'email' => 'required|email',
                 'password' => 'required|string|min:6'
             ], [
                 'name.required' => '請輸入名稱',
@@ -115,7 +124,6 @@ class AuthController extends Controller
                 'name.max' => '名稱不能超過255個字元',
                 'email.required' => '請輸入電子郵件',
                 'email.email' => '請輸入有效的電子郵件',
-                'email.unique' => '此電子郵件已被註冊',
                 'password.required' => '請輸入密碼',
                 'password.string' => '密碼必須為文字',
                 'password.min' => '密碼至少需要6個字元'
