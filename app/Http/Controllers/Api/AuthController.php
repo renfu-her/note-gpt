@@ -21,9 +21,10 @@ class AuthController extends Controller
         $member = Member::where('email', $request->email)->first();
 
         if (!$member || !Hash::check($request->password, $member->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['提供的認證資訊不正確。'],
-            ]);
+            return response()->json([
+                'message' => '帳號或密碼錯誤',
+                'error' => 'invalid_credentials'
+            ], 401);
         }
 
         // 刪除舊的 token
@@ -43,7 +44,7 @@ class AuthController extends Controller
     {
         try {
             $bearerToken = $request->bearerToken();
-            
+
             if (!$bearerToken) {
                 return response()->json([
                     'message' => '未提供 Token',
@@ -61,10 +62,10 @@ class AuthController extends Controller
             }
 
             $tokenId = $tokenParts[0];
-            
+
             // 查找 token 記錄
             $tokenModel = PersonalAccessToken::find($tokenId);
-            
+
             if (!$tokenModel || !$tokenModel->tokenable) {
                 return response()->json([
                     'message' => 'Token 無效',
@@ -73,7 +74,7 @@ class AuthController extends Controller
             }
 
             $member = $tokenModel->tokenable;
-            
+
             // 刪除所有舊的 token
             $member->tokens()->delete();
 
@@ -99,4 +100,4 @@ class AuthController extends Controller
 
         return response()->json(['message' => '已成功登出']);
     }
-} 
+}
