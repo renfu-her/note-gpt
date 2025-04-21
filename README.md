@@ -97,11 +97,18 @@ database/
 
 ## API 文檔
 
-### 認證 API
+# Note GPT API 文檔
 
-#### 登入
+## 基礎資訊
+- 基礎 URL: `http://your-domain.com/api`
+- 所有請求都需要在 Header 中帶上 `Authorization: Bearer {token}`
+- 所有響應都是 JSON 格式
+
+## 認證相關
+
+### 登入
 ```http
-POST /api/login
+POST /login
 Content-Type: application/json
 
 {
@@ -110,38 +117,128 @@ Content-Type: application/json
 }
 ```
 
-回應：
-```json
+### 登出
+```http
+POST /logout
+```
+
+### 刷新 Token
+```http
+POST /refresh
+```
+
+## 資料夾相關
+
+### 獲取所有資料夾
+```http
+GET /folders
+```
+
+### 創建資料夾
+```http
+POST /folders
+Content-Type: application/json
+
 {
-    "token": "your-api-token",
-    "member": {
-        "id": 1,
-        "name": "User Name",
-        "email": "user@example.com"
-    },
-    "expires_in": 3600
+    "name": "資料夾名稱",
+    "parent_id": null,  // 可選，父層資料夾 ID
+    "description": "描述",  // 可選
+    "sort_order": 0,  // 可選，排序
+    "is_active": true  // 可選，是否啟用
 }
 ```
 
-#### 刷新 Token
+### 更新資料夾
 ```http
-POST /api/refresh
-Authorization: Bearer your-api-token
-```
+PUT /folders/{id}
+Content-Type: application/json
 
-回應：
-```json
 {
-    "token": "new-api-token",
-    "expires_in": 3600
+    "name": "新資料夾名稱",
+    "parent_id": null,
+    "description": "新描述",
+    "sort_order": 1,
+    "is_active": true
 }
 ```
 
-#### 登出
+### 刪除資料夾
 ```http
-POST /api/logout
-Authorization: Bearer your-api-token
+DELETE /folders/{id}
 ```
+
+## 筆記相關
+
+### 獲取所有筆記
+```http
+GET /notes
+```
+
+### 獲取單個筆記
+```http
+GET /notes/{id}
+```
+
+### 創建筆記
+```http
+POST /notes
+Content-Type: application/json
+
+{
+    "folder_id": 1,  // 可選，資料夾 ID
+    "title": "筆記標題",
+    "content": "筆記內容",
+    "is_active": true  // 可選，是否啟用
+}
+```
+
+### 更新筆記
+```http
+PUT /notes/{id}
+Content-Type: application/json
+
+{
+    "folder_id": 1,
+    "title": "新標題",
+    "content": "新內容",
+    "is_active": true
+}
+```
+
+### 刪除筆記
+```http
+DELETE /notes/{id}
+```
+
+## 響應格式
+
+### 成功響應
+```json
+{
+    "data": {
+        // 響應數據
+    }
+}
+```
+
+### 錯誤響應
+```json
+{
+    "message": "錯誤訊息",
+    "errors": {
+        // 詳細錯誤信息
+    }
+}
+```
+
+## 狀態碼
+- 200: 成功
+- 201: 創建成功
+- 400: 請求錯誤
+- 401: 未認證
+- 403: 無權限
+- 404: 資源不存在
+- 500: 伺服器錯誤
 
 ### Flutter 實作指南
 

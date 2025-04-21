@@ -26,6 +26,7 @@ Route::middleware(['ensure.token'])->group(function () {
 
     // 筆記相關路由
     Route::get('/notes', [NoteController::class, 'index']); // 所有筆記
+    Route::get('/notes/{id}', [NoteController::class, 'show']);
     Route::post('/notes', [NoteController::class, 'store']);
     Route::put('/notes/{id}', [NoteController::class, 'update']);
     Route::delete('/notes/{id}', [NoteController::class, 'destroy']);

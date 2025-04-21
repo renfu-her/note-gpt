@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\NoteResource;
 
 class NoteController extends Controller
 {
@@ -128,6 +129,12 @@ class NoteController extends Controller
         }
 
         return response()->json($result, 200);
+    }
+
+    public function show(Request $request, $id)
+    {
+        $note = $request->user()->notes()->with('folder')->findOrFail($id);
+        return new NoteResource($note);
     }
 
     public function store(Request $request) 
