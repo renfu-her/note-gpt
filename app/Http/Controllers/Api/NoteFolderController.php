@@ -47,7 +47,7 @@ class NoteFolderController extends Controller
             
             // 處理 parent_id
             if ($request->has('parent_id')) {
-                if ($request->parent_id === '0' || $request->parent_id === 0) {
+                if ($request->parent_id === '0' || $request->parent_id === 0 || $request->parent_id === null) {
                     $parentId = null; // 最上層資料夾
                 } else {
                     // 檢查父資料夾是否存在且屬於當前用戶

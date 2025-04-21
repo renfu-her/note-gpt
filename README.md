@@ -1,4 +1,4 @@
-# Note GPT
+# 雲端筆記
 
 一個基於 Laravel 的筆記管理系統 API。
 
@@ -97,7 +97,7 @@ database/
 
 ## API 文檔
 
-# Note GPT API 文檔
+# 雲端筆記 API 文檔
 
 ## 基礎資訊
 - 基礎 URL: `http://your-domain.com/api`
