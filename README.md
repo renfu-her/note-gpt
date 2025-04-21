@@ -1,4 +1,98 @@
-# note-gpt
+# Note GPT
+
+一個基於 Laravel 的筆記管理系統 API。
+
+## 系統需求
+
+- PHP >= 8.2
+- MySQL >= 8.0
+- Composer
+- Laravel 12.x
+
+## 安裝步驟
+
+1. 克隆專案
+```bash
+git clone https://github.com/your-username/note-gpt.git
+cd note-gpt
+```
+
+2. 安裝依賴以及環境設定
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan db:seed
+php artisan vendor:publish --force --tag=livewire:assets
+php artisan filament:assets
+php artisan filament:cache-components
+```
+
+4. 設定資料庫
+在 `.env` 文件中配置資料庫連接：
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=note_gpt
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
+
+5. 執行資料庫遷移
+```bash
+php artisan migrate
+```
+
+6. 設定 Sanctum（API 認證）
+在 `.env` 文件中添加：
+```env
+SANCTUM_STATEFUL_DOMAINS=localhost:8000
+SESSION_DOMAIN=localhost
+```
+
+## 專案結構
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   └── Api/
+│   │       ├── AuthController.php      # 認證相關
+│   │       ├── NoteController.php      # 筆記管理
+│   │       └── NoteFolderController.php # 資料夾管理
+│   ├── Requests/
+│   │   └── NoteRequest.php            # 筆記請求驗證
+│   └── Resources/
+│       └── MemberResource.php         # 會員資源轉換
+├── Models/
+│   ├── Member.php                     # 會員模型
+│   ├── Note.php                       # 筆記模型
+│   └── NoteFolder.php                 # 資料夾模型
+└── Providers/
+    └── AuthServiceProvider.php        # 認證服務提供者
+
+database/
+└── migrations/                        # 資料庫遷移文件
+```
+
+## 功能特點
+
+- 會員系統
+  - 使用 Laravel Sanctum 進行 API 認證
+  - Token 有效期為 1 小時
+  - 支援 Token 刷新機制
+
+- 資料夾管理
+  - 支援多層級資料夾結構
+  - 自動維護資料夾排序
+  - 防止刪除非空資料夾
+
+- 筆記管理
+  - 支援資料夾內筆記
+  - 支援未分類筆記
+  - 自動按更新時間排序
+
 
 ## API 文檔
 
