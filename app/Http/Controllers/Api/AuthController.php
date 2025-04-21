@@ -37,7 +37,7 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'member' => $member,
-            'expires_in' => 3600, // token 有效期（秒）
+            'message' => '登入成功，Token 永久有效直到登出'
         ]);
     }
 
@@ -85,7 +85,7 @@ class AuthController extends Controller
             return response()->json([
                 'token' => $token,
                 'member' => $member,
-                'expires_in' => 3600,
+                'message' => '已刷新 Token，永久有效直到登出'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -146,14 +146,13 @@ class AuthController extends Controller
             $token = $member->createToken('auth_token')->plainTextToken;
 
             return response()->json([
-                'message' => '註冊成功',
+                'message' => '註冊成功，Token 永久有效直到登出',
                 'token' => $token,
                 'member' => [
                     'id' => $member->id,
                     'name' => $member->name,
                     'email' => $member->email
-                ],
-                'expires_in' => 3600
+                ]
             ], Response::HTTP_CREATED);
 
         } catch (\Exception $e) {
