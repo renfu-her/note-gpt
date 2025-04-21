@@ -73,6 +73,11 @@ class NoteFolderResource extends Resource
                     ->label('會員')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('parent.name')
+                    ->label('父層資料夾')
+                    ->formatStateUsing(fn ($state, $record) => $state ?? '沒有父層資料夾')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('arrow_path')
                     ->label('名稱')
                     ->sortable()
