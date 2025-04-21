@@ -44,19 +44,7 @@ class NoteFolderResource extends Resource
                     ->preload()
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
                     ->allowHtml()
-                    ->selectablePlaceholder(false)
-                    ->options(function (Forms\Get $get) {
-                        $memberId = $get('member_id');
-                        if (!$memberId) return [];
-                        
-                        $options = [null => '沒有父層資料夾'];
-                        $folders = \App\Models\NoteFolder::where('member_id', $memberId)
-                            ->where('id', '!=', $get('id'))
-                            ->pluck('name', 'id')
-                            ->toArray();
-                            
-                        return $options + $folders;
-                    }),
+                    ->selectablePlaceholder(false),
                 Forms\Components\TextInput::make('name')
                     ->label('名稱')
                     ->required()
@@ -83,11 +71,6 @@ class NoteFolderResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('member.name')
                     ->label('會員')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('parent.name')
-                    ->label('父層資料夾')
-                    ->formatStateUsing(fn ($state, $record) => $state ?? '沒有父層資料夾')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('arrow_path')
