@@ -133,8 +133,12 @@ class NoteController extends Controller
 
     public function show(Request $request, $id)
     {
-        $note = $request->user()->notes()->with('folder')->findOrFail($id);
-        return new NoteResource($note);
+        $note = $request->user()->notes()->findOrFail($id);
+        
+        return response()->json([
+            'message' => '筆記取得成功',
+            'data' => $note
+        ], 200);
     }
 
     public function store(Request $request) 
