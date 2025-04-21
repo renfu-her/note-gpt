@@ -44,7 +44,19 @@ class NoteFolderResource extends Resource
                     ->preload()
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
                     ->allowHtml()
-                    ->selectablePlaceholder(false),
+                    ->selectablePlaceholder(false)
+                    ->options(function (Forms\Get $get) {
+                        $memberId = $get('member_id');
+                        if (!$memberId) return [];
+                        
+                        $options = [null => '沒有父層資料夾'];
+                        $folders = \App\Models\NoteFolder::where('member_id', $memberId)
+                            ->where('id', '!=', $get('id'))
+                            ->pluck('name', 'id')
+                            ->toArray();
+                            
+                        return $options + $folders;
+                    }),
                 Forms\Components\TextInput::make('name')
                     ->label('名稱')
                     ->required()
