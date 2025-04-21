@@ -1,0 +1,29 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: create-directory
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        script: |
+          cd /home/case-studio-note-db/htdocs/note-db.case-studio.site
+          git pull
+          composer install
+          php artisan migrate --force
+          php artisan config:cache
+          php artisan view:cache
+          php artisan route:cache
+          php artisan config:cache
+          php artisan vendor:publish --force --tag=livewire:assets
+          php artisan filament:assets
+          php artisan filament:cache-components
+
