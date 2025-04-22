@@ -9,6 +9,7 @@ use App\Models\NoteFolder;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\NoteResource;
 
@@ -143,6 +144,10 @@ class NoteController extends Controller
 
     public function store(Request $request) 
     {
+        // 記錄所有請求資訊
+        Log::info('Request all:', $request->all());
+        Log::info('Request files:', $request->allFiles());
+        Log::info('Has file?', ['hasFile' => $request->hasFile('file')]);
 
         try {
             $validator = validator($request->all(), [
