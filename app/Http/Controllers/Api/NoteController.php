@@ -144,14 +144,14 @@ class NoteController extends Controller
     public function store(Request $request) 
     {
 
-        dd($request->all());
-        
+        dd($request->user());
+
         try {
             $validator = validator($request->all(), [
                 'folder_id' => 'required|exists:note_folders,id',
                 'title' => 'required|string|max:255',
                 'content' => 'nullable|string',
-                'file' => 'nullable|file|mimes:md,txt',
+                'file' => 'nullable|mimes:md,txt',
             ], [
                 'folder_id.required' => '請選擇資料夾',
                 'folder_id.exists' => '所選資料夾不存在',
@@ -159,7 +159,6 @@ class NoteController extends Controller
                 'title.string' => '標題必須為文字',
                 'title.max' => '標題不能超過255個字元',
                 'content.string' => '內容必須為文字',
-                'file.file' => '請上傳檔案',
                 'file.mimes' => '只允許上傳 md 或 txt 檔案',
             ]);
 
@@ -174,6 +173,7 @@ class NoteController extends Controller
             $data = $request->all();
             $member = Auth::guard('member')->user();
 
+            // 如果有上傳檔案，讀取檔案內容覆蓋 content
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 $data['content'] = file_get_contents($file->getRealPath());
@@ -189,7 +189,7 @@ class NoteController extends Controller
                 'message' => '筆記建立成功',
                 'data' => $note
             ], Response::HTTP_CREATED);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => '筆記建立失敗',
