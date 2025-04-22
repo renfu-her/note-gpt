@@ -144,8 +144,6 @@ class NoteController extends Controller
     public function store(Request $request) 
     {
 
-        dd($request->user());
-
         try {
             $validator = validator($request->all(), [
                 'folder_id' => 'required|exists:note_folders,id',
@@ -171,7 +169,7 @@ class NoteController extends Controller
             }
 
             $data = $request->all();
-            $member = Auth::guard('member')->user();
+            $member = $request->user();
 
             // 如果有上傳檔案，讀取檔案內容覆蓋 content
             if ($request->hasFile('file')) {
