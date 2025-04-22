@@ -143,6 +143,9 @@ class NoteController extends Controller
 
     public function store(Request $request) 
     {
+
+        dd($request->all());
+
         try {
             $validator = validator($request->all(), [
                 'folder_id' => 'required|exists:note_folders,id',
