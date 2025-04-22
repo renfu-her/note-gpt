@@ -145,78 +145,76 @@ class NoteController extends Controller
     public function store(Request $request)
     {
 
-        dd($request->all());
-
-        // try {
-        //     // 檢查請求的 Content-Type
-        //     $contentType = $request->header('Content-Type');
-        //     dd($contentType, $request->all());
+        try {
+            // 檢查請求的 Content-Type
+            $contentType = $request->header('Content-Type');
+            dd($contentType, $request->all());
             
-        //     $validator = validator($request->all(), [
-        //         'folder_id' => 'required|exists:note_folders,id',
-        //         'title' => 'required|string|max:255',
-        //         'content' => 'nullable|string',
-        //         'file' => 'nullable|file|mimes:md,txt',
-        //     ], [
-        //         'folder_id.required' => '請選擇資料夾',
-        //         'folder_id.exists' => '所選資料夾不存在',
-        //         'title.required' => '請輸入標題',
-        //         'title.string' => '標題必須為文字',
-        //         'title.max' => '標題不能超過255個字元',
-        //         'content.string' => '內容必須為文字',
-        //         'file.file' => '請上傳有效的檔案',
-        //         'file.mimes' => '只允許上傳 md 或 txt 檔案',
-        //     ]);
+            $validator = validator($request->all(), [
+                'folder_id' => 'required|exists:note_folders,id',
+                'title' => 'required|string|max:255',
+                'content' => 'nullable|string',
+                'file' => 'nullable|file|mimes:md,txt',
+            ], [
+                'folder_id.required' => '請選擇資料夾',
+                'folder_id.exists' => '所選資料夾不存在',
+                'title.required' => '請輸入標題',
+                'title.string' => '標題必須為文字',
+                'title.max' => '標題不能超過255個字元',
+                'content.string' => '內容必須為文字',
+                'file.file' => '請上傳有效的檔案',
+                'file.mimes' => '只允許上傳 md 或 txt 檔案',
+            ]);
 
-        //     if ($validator->fails()) {
-        //         return response()->json([
-        //             'message' => '驗證失敗',
-        //             'errors' => $validator->errors()
-        //         ], Response::HTTP_BAD_REQUEST);
-        //     }
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => '驗證失敗',
+                    'errors' => $validator->errors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
 
-        //     // content 與 file 必須至少有一個
-        //     if (!$request->hasFile('file') && !$request->filled('content')) {
-        //         return response()->json([
-        //             'message' => '請輸入內容或上傳 md 檔案',
-        //             'error' => 'content_or_file_required'
-        //         ], Response::HTTP_BAD_REQUEST);
-        //     }
+            // content 與 file 必須至少有一個
+            if (!$request->hasFile('file') && !$request->filled('content')) {
+                return response()->json([
+                    'message' => '請輸入內容或上傳 md 檔案',
+                    'error' => 'content_or_file_required'
+                ], Response::HTTP_BAD_REQUEST);
+            }
 
-        //     $data = $request->only(['folder_id', 'title', 'content']);
-        //     $member = $request->user();
+            $data = $request->only(['folder_id', 'title', 'content']);
+            $member = $request->user();
 
-        //     // 如果有上傳檔案，讀取檔案內容
-        //     if ($request->hasFile('file')) {
-        //         $file = $request->file('file');
-        //         if ($file->isValid()) {
-        //             $data['content'] = file_get_contents($file->getRealPath());
-        //         } else {
-        //             return response()->json([
-        //                 'message' => '檔案上傳失敗',
-        //                 'error' => 'invalid_file'
-        //             ], Response::HTTP_BAD_REQUEST);
-        //         }
-        //     }
+            // 如果有上傳檔案，讀取檔案內容
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                if ($file->isValid()) {
+                    $data['content'] = file_get_contents($file->getRealPath());
+                } else {
+                    return response()->json([
+                        'message' => '檔案上傳失敗',
+                        'error' => 'invalid_file'
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+            }
 
-        //     if ($data['folder_id'] === '0' || $data['folder_id'] === 0) {
-        //         $data['folder_id'] = null;
-        //     }
+            if ($data['folder_id'] === '0' || $data['folder_id'] === 0) {
+                $data['folder_id'] = null;
+            }
 
-        //     $note = $member->notes()->create($data);
+            $note = $member->notes()->create($data);
 
-        //     return response()->json([
-        //         'message' => '筆記建立成功',
-        //         'data' => $note
-        //     ], Response::HTTP_CREATED);
+            return response()->json([
+                'message' => '筆記建立成功',
+                'data' => $note
+            ], Response::HTTP_CREATED);
 
-        // } catch (\Exception $e) {
-        //     Log::error('Note creation failed: ' . $e->getMessage());
-        //     return response()->json([
-        //         'message' => '筆記建立失敗',
-        //         'error' => $e->getMessage()
-        //     ], Response::HTTP_BAD_REQUEST);
-        // }
+        } catch (\Exception $e) {
+            Log::error('Note creation failed: ' . $e->getMessage());
+            return response()->json([
+                'message' => '筆記建立失敗',
+                'error' => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
+        }
     }
 
     public function update(Request $request, int $id)
