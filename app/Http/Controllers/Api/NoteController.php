@@ -160,7 +160,7 @@ class NoteController extends Controller
                 'file.mimes' => '只允許上傳 md 或 txt 檔案',
             ]);
 
-            dd($request->all(), $request->files());
+            dd($request->all(), $request->allFiles());
 
             // content 與 file 必須至少有一個
             if (!$request->hasFile('file') && !$request->filled('content')) {
