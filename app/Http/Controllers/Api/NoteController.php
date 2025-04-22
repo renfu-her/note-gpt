@@ -146,10 +146,6 @@ class NoteController extends Controller
     {
 
         try {
-            // 檢查請求的 Content-Type
-            $contentType = $request->header('Content-Type');
-            dd($contentType, $request->all());
-            
             $validator = validator($request->all(), [
                 'folder_id' => 'required|exists:note_folders,id',
                 'title' => 'required|string|max:255',
