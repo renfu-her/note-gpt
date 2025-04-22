@@ -147,32 +147,39 @@ class NoteController extends Controller
             $validator = validator($request->all(), [
                 'folder_id' => 'required|exists:note_folders,id',
                 'title' => 'required|string|max:255',
-                'content' => 'required|string'
+                'content' => 'nullable|string',
+                'file' => 'nullable|file|mimes:md,txt',
             ], [
                 'folder_id.required' => '請選擇資料夾',
                 'folder_id.exists' => '所選資料夾不存在',
                 'title.required' => '請輸入標題',
                 'title.string' => '標題必須為文字',
                 'title.max' => '標題不能超過255個字元',
-                'content.required' => '請輸入內容',
-                'content.string' => '內容必須為文字'
+                'content.string' => '內容必須為文字',
+                'file.file' => '請上傳檔案',
+                'file.mimes' => '只允許上傳 md 或 txt 檔案',
             ]);
 
-            if ($validator->fails()) {
+            // content 與 file 必須至少有一個
+            if (!$request->hasFile('file') && !$request->filled('content')) {
                 return response()->json([
-                    'message' => '參數錯誤',
-                    'errors' => $validator->errors()
+                    'message' => '請輸入內容或上傳 md 檔案',
+                    'error' => 'content_or_file_required'
                 ], Response::HTTP_BAD_REQUEST);
             }
 
             $data = $request->all();
-            
             $member = Auth::guard('member')->user();
-            
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $data['content'] = file_get_contents($file->getRealPath());
+            }
+
             if ($data['folder_id'] === '0' || $data['folder_id'] === 0) {
                 $data['folder_id'] = null;
             }
-            
+
             $note = $member->notes()->create($data);
 
             return response()->json([
@@ -193,31 +200,38 @@ class NoteController extends Controller
         try {
             $validator = validator($request->all(), [
                 'title' => 'required|string|max:255',
-                'content' => 'required|string'
+                'content' => 'nullable|string',
+                'file' => 'nullable|file|mimes:md,txt',
             ], [
                 'title.required' => '請輸入標題',
                 'title.string' => '標題必須為文字',
                 'title.max' => '標題不能超過255個字元',
-                'content.required' => '請輸入內容',
-                'content.string' => '內容必須為文字'
+                'content.string' => '內容必須為文字',
+                'file.file' => '請上傳檔案',
+                'file.mimes' => '只允許上傳 md 或 txt 檔案',
             ]);
 
-            if ($validator->fails()) {
+            if (!$request->hasFile('file') && !$request->filled('content')) {
                 return response()->json([
-                    'message' => '參數錯誤',
-                    'errors' => $validator->errors()
+                    'message' => '請輸入內容或上傳 md 檔案',
+                    'error' => 'content_or_file_required'
                 ], Response::HTTP_BAD_REQUEST);
             }
 
             $member = Auth::guard('member')->user();
-            
             $note = $member->notes()->findOrFail($id);
-            
-            // 只更新允許的欄位
-            $note->update([
+
+            $updateData = [
                 'title' => $request->title,
                 'content' => $request->content
-            ]);
+            ];
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $updateData['content'] = file_get_contents($file->getRealPath());
+            }
+
+            $note->update($updateData);
 
             return response()->json([
                 'message' => '筆記更新成功',

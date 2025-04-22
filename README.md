@@ -179,31 +179,78 @@ GET /notes
 GET /notes/{id}
 ```
 
-### 創建筆記
-```http
-POST /notes
-Content-Type: application/json
+### 創建筆記（支援上傳 .md 檔案）
 
-{
-    "folder_id": 1,  // 可選，資料夾 ID
-    "title": "筆記標題",
-    "content": "筆記內容",
-    "is_active": true  // 可選，是否啟用
-}
+```http
+POST /api/notes
+Content-Type: multipart/form-data
+Authorization: Bearer your-api-token
+
+欄位：
+- folder_id：資料夾 ID（必填）
+- title：筆記標題（必填）
+- content：筆記內容（可選，與 file 二選一）
+- file：上傳 .md 或 .txt 檔案（可選，與 content 二選一，若同時存在以檔案內容為主）
 ```
 
-### 更新筆記
-```http
-PUT /notes/{id}
-Content-Type: application/json
-
-{
-    "folder_id": 1,
-    "title": "新標題",
-    "content": "新內容",
-    "is_active": true
-}
+**範例請求（上傳檔案）：**
 ```
+POST /api/notes
+Content-Type: multipart/form-data
+
+folder_id=3
+title=新增筆記
+file=example.md
+```
+
+**範例請求（純文字內容）：**
+```
+POST /api/notes
+Content-Type: multipart/form-data
+
+folder_id=3
+title=新增筆記
+content=這是純文字內容
+```
+
+**注意：**
+- `content` 與 `file` 必須至少有一個。
+- 若同時傳送，會以上傳檔案內容為主，覆蓋 content 欄位。
+
+### 更新筆記（支援上傳 .md 檔案）
+
+```http
+PUT /api/notes/{id}
+Content-Type: multipart/form-data
+Authorization: Bearer your-api-token
+
+欄位：
+- title：筆記標題（必填）
+- content：筆記內容（可選，與 file 二選一）
+- file：上傳 .md 或 .txt 檔案（可選，與 content 二選一，若同時存在以檔案內容為主）
+```
+
+**範例請求（上傳檔案）：**
+```
+PUT /api/notes/1
+Content-Type: multipart/form-data
+
+title=更新標題
+file=example.md
+```
+
+**範例請求（純文字內容）：**
+```
+PUT /api/notes/1
+Content-Type: multipart/form-data
+
+title=更新標題
+content=這是新的內容
+```
+
+**注意：**
+- `content` 與 `file` 必須至少有一個。
+- 若同時傳送，會以上傳檔案內容為主，覆蓋 content 欄位。
 
 ### 刪除筆記
 ```http
