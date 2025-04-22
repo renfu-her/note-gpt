@@ -135,52 +135,43 @@ class NoteController extends Controller
     public function show(Request $request, $id)
     {
         $note = $request->user()->notes()->findOrFail($id);
-        
+
         return response()->json([
             'message' => '筆記取得成功',
             'data' => $note
         ], 200);
     }
 
-    public function store(Request $request) 
+    public function store(Request $request)
     {
-        // 記錄所有請求資訊
-        Log::info('Request all:', $request->all());
-        Log::info('Request files:', $request->allFiles());
-        Log::info('Has file?', ['hasFile' => $request->hasFile('file')]);
+
+
+        dd($request->all());
 
         try {
             $validator = validator($request->all(), [
                 'folder_id' => 'required|exists:note_folders,id',
                 'title' => 'required|string|max:255',
-                'content' => 'nullable|string',
-                'file' => 'nullable|mimes:md,txt',
+                'content' => 'required|string',
             ], [
                 'folder_id.required' => '請選擇資料夾',
                 'folder_id.exists' => '所選資料夾不存在',
                 'title.required' => '請輸入標題',
                 'title.string' => '標題必須為文字',
                 'title.max' => '標題不能超過255個字元',
+                'content.required' => '請輸入內容',
                 'content.string' => '內容必須為文字',
-                'file.mimes' => '只允許上傳 md 或 txt 檔案',
             ]);
 
-            // content 與 file 必須至少有一個
-            if (!$request->hasFile('file') && !$request->filled('content')) {
+            if ($validator->fails()) {
                 return response()->json([
-                    'message' => '請輸入內容或上傳 md 檔案',
-                    'error' => 'content_or_file_required'
+                    'message' => '驗證失敗',
+                    'errors' => $validator->errors()
                 ], Response::HTTP_BAD_REQUEST);
             }
 
             $data = $request->all();
             $member = $request->user();
-
-            // 如果有上傳檔案，讀取檔案內容覆蓋 content
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
-                $data['content'] = file_get_contents($file->getRealPath());
-            }
 
             if ($data['folder_id'] === '0' || $data['folder_id'] === 0) {
                 $data['folder_id'] = null;
@@ -192,7 +183,6 @@ class NoteController extends Controller
                 'message' => '筆記建立成功',
                 'data' => $note
             ], Response::HTTP_CREATED);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => '筆記建立失敗',
@@ -206,21 +196,19 @@ class NoteController extends Controller
         try {
             $validator = validator($request->all(), [
                 'title' => 'required|string|max:255',
-                'content' => 'nullable|string',
-                'file' => 'nullable|file|mimes:md,txt',
+                'content' => 'required|string',
             ], [
                 'title.required' => '請輸入標題',
                 'title.string' => '標題必須為文字',
                 'title.max' => '標題不能超過255個字元',
+                'content.required' => '請輸入內容',
                 'content.string' => '內容必須為文字',
-                'file.file' => '請上傳檔案',
-                'file.mimes' => '只允許上傳 md 或 txt 檔案',
             ]);
 
-            if (!$request->hasFile('file') && !$request->filled('content')) {
+            if ($validator->fails()) {
                 return response()->json([
-                    'message' => '請輸入內容或上傳 md 檔案',
-                    'error' => 'content_or_file_required'
+                    'message' => '驗證失敗',
+                    'errors' => $validator->errors()
                 ], Response::HTTP_BAD_REQUEST);
             }
 
@@ -232,18 +220,12 @@ class NoteController extends Controller
                 'content' => $request->content
             ];
 
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
-                $updateData['content'] = file_get_contents($file->getRealPath());
-            }
-
             $note->update($updateData);
 
             return response()->json([
                 'message' => '筆記更新成功',
                 'data' => $note
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'message' => '筆記更新失敗',
@@ -255,7 +237,7 @@ class NoteController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $member = Auth::guard('member')->user();
-        
+
         $note = $member->notes()->findOrFail($id);
         $note->delete();
 
@@ -263,4 +245,4 @@ class NoteController extends Controller
             'message' => '筆記刪除成功'
         ]);
     }
-} 
+}
