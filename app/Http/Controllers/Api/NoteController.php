@@ -218,19 +218,29 @@ class NoteController extends Controller
         try {
             $validator = validator($request->all(), [
                 'title' => 'required|string|max:255',
-                'content' => 'required|string',
+                'content' => 'nullable|string',
+                'file' => 'nullable|file|mimes:md,txt',
             ], [
                 'title.required' => '請輸入標題',
                 'title.string' => '標題必須為文字',
                 'title.max' => '標題不能超過255個字元',
-                'content.required' => '請輸入內容',
                 'content.string' => '內容必須為文字',
+                'file.file' => '請上傳有效的檔案',
+                'file.mimes' => '只允許上傳 md 或 txt 檔案',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'message' => '驗證失敗',
                     'errors' => $validator->errors()
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            // content 與 file 必須至少有一個
+            if (!$request->hasFile('file') && !$request->filled('content')) {
+                return response()->json([
+                    'message' => '請輸入內容或上傳 md 檔案',
+                    'error' => 'content_or_file_required'
                 ], Response::HTTP_BAD_REQUEST);
             }
 
@@ -241,6 +251,19 @@ class NoteController extends Controller
                 'title' => $request->title,
                 'content' => $request->content
             ];
+
+            // 如果有上傳檔案，讀取檔案內容
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                if ($file->isValid()) {
+                    $updateData['content'] = file_get_contents($file->getRealPath());
+                } else {
+                    return response()->json([
+                        'message' => '檔案上傳失敗',
+                        'error' => 'invalid_file'
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+            }
 
             $note->update($updateData);
 
