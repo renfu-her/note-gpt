@@ -73,8 +73,4 @@ class UserResource extends Resource
         ];
     }
 
-    public static function getNavigationGroup(): ?string
-    {
-        return '用戶管理';
-    }
 } 
