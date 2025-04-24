@@ -216,8 +216,6 @@ class NoteController extends Controller
     public function update(Request $request, int $id)
     {
 
-        dd($request->all(), $id);
-
         try {
             $validator = validator($request->all(), [
                 'title' => 'required|string|max:255',
