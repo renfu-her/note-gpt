@@ -56,7 +56,7 @@ class NoteController extends Controller
                 'notes' => $notes
             ];
 
-            return response()->json($response, $notes->isEmpty() ? 200 : 200);
+            return response()->json($response,  200);
         }
 
         // 獲取所有資料夾
