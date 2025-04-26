@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 
 // 公開路由
-Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh', [AuthController::class, 'refresh']);
 
 // 需要認證的路由
