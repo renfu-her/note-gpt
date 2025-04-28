@@ -9,5 +9,6 @@ class Notification extends Model
     protected $fillable = [
         'title',
         'content',
+        'sort',
     ];
 }

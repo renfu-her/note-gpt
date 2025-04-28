@@ -29,8 +29,14 @@ class NotificationResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('title')
                     ->required()
+                    ->columnSpanFull()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('content')
+                    ->columnSpanFull()
+                    ->required(),
+                Forms\Components\TextInput::make('sort')
+                    ->numeric()
+                    ->default(0)
                     ->required(),
             ]);
     }
@@ -39,8 +45,9 @@ class NotificationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->searchable(),
-                Tables\Columns\TextColumn::make('content')->limit(50),
+                Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('content')->limit(50)->sortable(),
+                Tables\Columns\TextColumn::make('sort')->sortable(),
             ])
             ->filters([
                 //
