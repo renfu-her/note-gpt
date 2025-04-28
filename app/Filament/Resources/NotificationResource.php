@@ -28,13 +28,16 @@ class NotificationResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
+                    ->label('標題')
                     ->required()
                     ->columnSpanFull()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('content')
+                    ->label('內容')
                     ->columnSpanFull()
                     ->required(),
                 Forms\Components\TextInput::make('sort')
+                    ->label('排序')
                     ->numeric()
                     ->default(0)
                     ->required(),
