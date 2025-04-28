@@ -34,6 +34,7 @@ class NotificationResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Textarea::make('content')
                     ->label('內容')
+                    ->rows(10)
                     ->columnSpanFull()
                     ->required(),
                 Forms\Components\TextInput::make('sort')
@@ -48,9 +49,9 @@ class NotificationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('content')->limit(50)->sortable(),
-                Tables\Columns\TextColumn::make('sort')->sortable(),
+                Tables\Columns\TextColumn::make('title')->label('標題')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('content')->label('內容')->limit(50)->sortable(),
+                Tables\Columns\TextColumn::make('sort')->label('排序')->sortable(),
             ])
             ->filters([
                 //
